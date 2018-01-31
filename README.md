@@ -1,4 +1,4 @@
-# es6-pixi-bolierplate
+# Rock Paper Scissors
 
 Rock Paper Scissors game made with Pixi.js using ES6/2015.
 
