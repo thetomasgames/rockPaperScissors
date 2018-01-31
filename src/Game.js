@@ -50,6 +50,7 @@ export default class Game {
     }
     this.statusText.text = text;
     this.animationLoop.start();
+    // end game and create player options
   }
 
   stop() {

@@ -7,7 +7,8 @@ export default class Player extends PIXI.Sprite {
     this.anchor.set(0.5, 0.5);
     this.position.set(x, y);
     this.rotation = rotation;
-    this.tint = (Math.random() * 0xffffff) << 0;
+    this.tint = (Math.random() * 0xffffff) << 0; // create specific color for players implementations
+    // create player's name text
   }
 
   update(delta) {}
