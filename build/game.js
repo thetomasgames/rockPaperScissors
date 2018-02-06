@@ -28347,6 +28347,7 @@
 	    this.statusText = new _pixi2.default.Text('example');
 	    this.statusText.position.set(this.width / 2, this.height * 0.1);
 	    this.statusText.anchor.set(0.5, 0.5);
+	    this.statusText.on('pointerdown', this.playOnce);
 	    this.stage.addChild(this.statusText);
 	    this.start();
 	  }
@@ -28477,7 +28478,7 @@
 	    key: 'render',
 	    value: function render(option) {
 	      // console.log(option.id);
-	      this.texture = _pixi2.default.Texture.fromImage('./assets/' + option.id + '.png', false);
+	      this.texture = option.texture;
 	    }
 	  }]);
 	
@@ -28507,6 +28508,7 @@
 	    this.id = id;
 	    this.winsIds = winsIds;
 	    this.loosesIds = loosesIds;
+	    this.texture = PIXI.Texture.fromImage('./assets/' + id + '.png', false);
 	  }
 	
 	  _createClass(PlayOptions, [{
@@ -28522,11 +28524,6 @@
 	      return this.loosesIds.find(function (i) {
 	        return i == other.id;
 	      });
-	    }
-	  }, {
-	    key: 'sprite',
-	    value: function sprite() {
-	      return '';
 	    }
 	  }]);
 	
@@ -28550,6 +28547,8 @@
 	};
 	
 	exports.default = PlayOptions;
+	
+	PlayOptions.prototype.ROCK = 'test';
 
 /***/ }),
 /* 141 */

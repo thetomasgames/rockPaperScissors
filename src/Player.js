@@ -4,9 +4,8 @@ import { Observable } from 'rxjs';
 
 // random, predictive(estimates normal distribution), memory(), behaviour
 export default class Player extends PIXI.Sprite {
-
   constructor(x, y, rotation) {
-    super(PIXI.Texture.fromImage('./assets/rock.png', false));
+    super(PlayOptions.values()[0]);
     this.anchor.set(0.5, 0.5);
     this.position.set(x, y);
     this.rotation = rotation;
@@ -14,9 +13,7 @@ export default class Player extends PIXI.Sprite {
     // create player's name text
   }
 
-  update(delta) {
-    
-  }
+  update(delta) {}
 
   chooseOption() {
     const opt = PlayOptions.values()[
@@ -28,9 +25,6 @@ export default class Player extends PIXI.Sprite {
 
   render(option) {
     // console.log(option.id);
-    this.texture = PIXI.Texture.fromImage(
-      './assets/' + option.id + '.png',
-      false
-    );
+    this.texture = option.texture;
   }
 }

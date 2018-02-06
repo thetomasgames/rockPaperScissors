@@ -12,6 +12,7 @@ export default class PlayOptions {
     this.id = id;
     this.winsIds = winsIds;
     this.loosesIds = loosesIds;
+    this.texture = PIXI.Texture.fromImage('./assets/' + id + '.png', false);
   }
   wins(other) {
     return this.winsIds.find(i => i == other.id);
@@ -19,7 +20,5 @@ export default class PlayOptions {
   looses(other) {
     return this.loosesIds.find(i => i == other.id);
   }
-  sprite() {
-    return '';
-  }
 }
+PlayOptions.prototype.ROCK = 'test';

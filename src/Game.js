@@ -24,6 +24,7 @@ export default class Game {
     this.statusText = new PIXI.Text('example');
     this.statusText.position.set(this.width / 2, this.height * 0.1);
     this.statusText.anchor.set(0.5, 0.5);
+    this.statusText.on('pointerdown', this.playOnce);
     this.stage.addChild(this.statusText);
     this.start();
   }
