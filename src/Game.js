@@ -1,10 +1,12 @@
 import Player from './Player.js';
 import PIXI from 'pixi.js';
+import { Observable } from 'rxjs';
 
 export default class Game {
   width;
   height;
   statusText;
+  players = [];
   constructor(config) {
     this.width = config.width || 800;
     this.height = config.height || 600;
@@ -23,6 +25,7 @@ export default class Game {
     this.statusText.position.set(this.width / 2, this.height * 0.1);
     this.statusText.anchor.set(0.5, 0.5);
     this.stage.addChild(this.statusText);
+    this.start();
   }
   update() {
     for (let i = 0; i < this.stage.children.length; i++) {
@@ -33,24 +36,35 @@ export default class Game {
   }
 
   start() {
-    let player1 = new Player(0.1 * this.width, this.height / 2, 90);
+    let player1 = new Player(0.1 * this.width, this.height / 2, Math.PI);
     this.stage.addChild(player1);
-    let player2 = new Player(0.9 * this.width, this.height / 2, 180);
+    let player2 = new Player(0.9 * this.width, this.height / 2, -Math.PI);
     this.stage.addChild(player2);
 
-    const opt1 = player1.chooseOption();
-    const opt2 = player2.chooseOption();
-    let text;
-    if (opt1.wins(opt2)) {
-      text = 'Player 1 is the winner!';
-    } else if (opt1.looses(opt2)) {
-      text = 'Player 2 is the winner!';
-    } else {
-      text = 'We have a draw here!';
-    }
-    this.statusText.text = text;
+    this.players = [player1, player2];
+    this.playOnce();
+
     this.animationLoop.start();
     // end game and create player options
+  }
+
+  playOnce() {
+    const obs1 = this.players[0].chooseOption();
+    const obs2 = this.players[1].chooseOption();
+
+    Observable.zip(obs1, obs2).subscribe(pair => {
+      const opt1 = pair['0'];
+      const opt2 = pair['1'];
+      let text;
+      if (opt1.wins(opt2)) {
+        text = 'Player 1 is the winner!';
+      } else if (opt1.looses(opt2)) {
+        text = 'Player 2 is the winner!';
+      } else {
+        text = 'We have a draw here!';
+      }
+      this.statusText.text = text;
+    });
   }
 
   stop() {

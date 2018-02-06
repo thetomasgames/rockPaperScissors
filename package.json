@@ -8,10 +8,8 @@
   "license": "MIT",
   "scripts": {
     "start": "npm run dev",
-    "dev":
-      "webpack --config webpack.config.js --progress --inline --colors --watch",
-    "build":
-      "NODE_ENV=production webpack --config webpack.config.js --progress --colors -p"
+    "dev": "webpack --config webpack.config.js --progress --inline --colors --watch",
+    "build": "NODE_ENV=production webpack --config webpack.config.js --progress --colors -p"
   },
   "devDependencies": {
     "babel-core": "^6.3.17",
@@ -25,5 +23,8 @@
     "pixi.js": "^3.0.8",
     "transform-loader": "^0.2.3",
     "webpack": "^1.12.9"
+  },
+  "dependencies": {
+    "rxjs": "^6.0.0-alpha.2"
   }
 }
