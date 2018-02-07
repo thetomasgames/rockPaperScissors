@@ -5,6 +5,7 @@ import PlayOptions from './PlayOptions';
 export default class Game {
   statusText;
   players = [];
+  gameoptions = [];
   constructor(config) {
     this.app = new PIXI.Application(800,300,{backgroundColor: 0x1099bb});
     document.body.appendChild(this.app.view);
@@ -12,61 +13,66 @@ export default class Game {
     this.statusText.interactive = true;
     this.statusText.interactive = true;
     this.statusText.buttonMode = true;
-    this.statusText.on('pointerdown',()=>this.playOnce());
+    this.statusText.on('pointerdown',()=>this.playComputerAgainstComputer());
     this.statusText.position.set(this.app.screen.width / 2, this.app.screen.height * 0.1);
     this.statusText.anchor.set(0.5, 0.5);
     this.app.stage.addChild(this.statusText);
     this.createGameOptions();
-    this.start();
   }
 
   
   createGameOptions(){
-    let optionTextures = [PlayOptions.ROCK.texture,PlayOptions.PAPPER.texture,PlayOptions.SCISSORS.texture]
-    this.gameoptions=[];
-    for(var i=0;i<optionTextures.length;i++){
-      let obj = new PIXI.Sprite(optionTextures[i])
-      obj.x+=i*50;
-      
+    for(var i=0;i<PlayOptions.values.length;i++){
+      let obj = new PIXI.Sprite(PlayOptions.values[i].texture)
+      obj.anchor.set(0.5,0.5)
+      obj.x=(i-PlayOptions.values.length/2)*100+this.app.screen.width/2;
+      obj.y=this.app.screen.height/2;
       obj.interactive = true;
       obj.buttonMode = true;
-      obj.on('pointerdown',this.test);
+      let value= PlayOptions.values[i];
+      obj.on('pointerdown',()=>this.playHumanAgainstComputer(value));
       this.gameoptions.push(obj);
     }
-    
+    this.showGameOptions();
+  }
+
+  showGameOptions(){
     this.gameoptions.forEach(o=>this.app.stage.addChild(o));
   }
 
-  test(){
-    console.log('test');
+  hideGameOptions(){
+    this.gameoptions.forEach(o=>this.app.stage.removeChild(o));
   }
 
-  update() {
-    for (let i = 0; i < this.app.stage.children.length; i++) {
-      if (this.app.stage.children[i].update) {
-    //    this.app.stage.children[i].update(this.animationLoop.delta);
-      }
+  createPlayers(option) {
+    if(this.players){
+      this.players.forEach(p=>this.app.stage.removeChild(p));
     }
-  }
-
-  start() {
-    let player1 = new Player(0, this.app.screen.height / 3, 5/8*Math.PI,PlayOptions.PAPPER);
+    this.players=[];
+    let player1 = new Player(0, this.app.screen.height / 3, 5/8*Math.PI,option);
     this.app.stage.addChild(player1);
     
-    this.app.ticker.add(d=>player1.update(0.01));
+    this.app.ticker.add(d=>player1.update(0.015));
     let player2 = new Player(this.app.screen.width, this.app.screen.height / 3, 11/8*Math.PI);
     this.app.stage.addChild(player2);
-    this.app.ticker.add(d=>player2.update(0.01));
+    this.app.ticker.add(d=>player2.update(0.015));
 
     this.players = [player1, player2];
-
-    //this.animationLoop.start();
-    
-    // end game and create player options
   }
 
+  playComputerAgainstComputer() {
+    this.createPlayers();
+    this.playWithPlayersSet();
+  }
 
-  playOnce() {
+  playHumanAgainstComputer(option) {
+    this.createPlayers(option);
+    this.playWithPlayersSet();
+    //this.hideGameOptions();
+    //setTimeout(()=>this.showGameOptions(),2);
+  }
+  
+  playWithPlayersSet() {
     const obs1 = this.players[0].chooseOption();
     const obs2 = this.players[1].chooseOption();
 
