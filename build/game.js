@@ -41600,7 +41600,9 @@
 	      var _this2 = this;
 	
 	      var _loop = function _loop() {
-	        var obj = new PIXI.Sprite(_PlayOptions2.default.values[i].texture);
+	        var obj = new PIXI.Sprite(_PlayOptions2.default.values[i].texture, {
+	          crossOrigin: true
+	        });
 	        obj.anchor.set(0.5, 0.5);
 	        obj.x = (i - _PlayOptions2.default.values.length / 2) * 100 + _this2.app.screen.width / 2;
 	        obj.y = _this2.app.screen.height / 2;
@@ -41697,11 +41699,6 @@
 	        _this6.statusText.text = text;
 	      });
 	    }
-	  }, {
-	    key: 'stop',
-	    value: function stop() {
-	      this.animationLoop.stop();
-	    }
 	  }]);
 	
 	  return Game;
@@ -41742,7 +41739,7 @@
 	  function Player(x, y, rotation, choice) {
 	    _classCallCheck(this, Player);
 	
-	    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, _PlayOptions2.default.ROCK.texture));
+	    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, _PlayOptions2.default.ROCK.texture, false));
 	
 	    _this.position.set(x, y);
 	    _this.anchor.set(0.5, 0.95);
