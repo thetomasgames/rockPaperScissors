@@ -41581,7 +41581,7 @@
 	
 	    this.app = new PIXI.Application(800, 300, { backgroundColor: 0x1099bb });
 	    document.body.appendChild(this.app.view);
-	    this.statusText = new PIXI.Text('Rock Papper Scissors!');
+	    this.statusText = new PIXI.Text('Rock Papper Scissors! (click here to random)');
 	    this.statusText.interactive = true;
 	    this.statusText.interactive = true;
 	    this.statusText.buttonMode = true;
@@ -41591,6 +41591,9 @@
 	    this.statusText.position.set(this.app.screen.width / 2, this.app.screen.height * 0.1);
 	    this.statusText.anchor.set(0.5, 0.5);
 	    this.app.stage.addChild(this.statusText);
+	
+	    this.player1Wins = 0;
+	    this.player2Wins = 0;
 	    this.createGameOptions();
 	  }
 	
@@ -41599,13 +41602,14 @@
 	    value: function createGameOptions() {
 	      var _this2 = this;
 	
+	      var size = 100;
+	      var offset = -(_PlayOptions2.default.values.length - 1) * size / 2;
+	
 	      var _loop = function _loop() {
-	        var obj = new PIXI.Sprite(_PlayOptions2.default.values[i].texture, {
-	          crossOrigin: true
-	        });
+	        var obj = new PIXI.Sprite(_PlayOptions2.default.values[i].texture);
 	        obj.anchor.set(0.5, 0.5);
-	        obj.x = (i - _PlayOptions2.default.values.length / 2) * 100 + _this2.app.screen.width / 2;
-	        obj.y = _this2.app.screen.height / 2;
+	        obj.x = offset + i * size + _this2.app.screen.width / 2;
+	        obj.y = _this2.app.screen.height;
 	        obj.interactive = true;
 	        obj.buttonMode = true;
 	        var value = _PlayOptions2.default.values[i];
@@ -41618,44 +41622,67 @@
 	      for (var i = 0; i < _PlayOptions2.default.values.length; i++) {
 	        _loop();
 	      }
+	      this.targetGameOptionsY = this.app.screen.height;
+	      this.gameoptions.forEach(function (opt) {
+	        return _this2.app.ticker.add(function (d) {
+	          if (opt.y != _this2.targetGameOptionsY) {
+	            var speed = 20;
+	            if (opt.y < _this2.targetGameOptionsY) {
+	              opt.y += Math.min(speed, _this2.targetGameOptionsY - opt.y);
+	            } else {
+	              opt.y -= Math.min(speed, opt.y - _this2.targetGameOptionsY);
+	            }
+	          }
+	        });
+	      });
+	      this.gameoptions.forEach(function (o) {
+	        return _this2.app.stage.addChild(o);
+	      });
 	      this.showGameOptions();
 	    }
 	  }, {
 	    key: 'showGameOptions',
 	    value: function showGameOptions() {
-	      var _this3 = this;
-	
-	      this.gameoptions.forEach(function (o) {
-	        return _this3.app.stage.addChild(o);
-	      });
+	      this.targetGameOptionsY = this.app.screen.height;
 	    }
 	  }, {
 	    key: 'hideGameOptions',
 	    value: function hideGameOptions() {
-	      var _this4 = this;
-	
-	      this.gameoptions.forEach(function (o) {
-	        return _this4.app.stage.removeChild(o);
-	      });
+	      this.targetGameOptionsY = this.app.screen.height * 2;
 	    }
 	  }, {
 	    key: 'createPlayers',
 	    value: function createPlayers(option) {
-	      var _this5 = this;
+	      var _this3 = this;
 	
 	      if (this.players) {
 	        this.players.forEach(function (p) {
-	          return _this5.app.stage.removeChild(p);
+	          return _this3.app.stage.removeChild(p);
 	        });
+	      }
+	      if (!this.player1WinsText) {
+	        this.player1WinsText = new PIXI.Text('Wins:0');
+	        this.player1WinsText.position.set(this.app.screen.width * 0.05, this.app.screen.height * 0.05);
+	        this.player1WinsText.anchor.set(0, 0.5);
+	        this.app.stage.addChild(this.player1WinsText);
+	      }
+	
+	      if (!this.player2WinsText) {
+	        this.player2WinsText = new PIXI.Text('Wins:0');
+	        this.player2WinsText.position.set(this.app.screen.width * 0.95, this.app.screen.height * 0.05);
+	        this.player2WinsText.anchor.set(1, 0.5);
+	        this.app.stage.addChild(this.player2WinsText);
 	      }
 	      this.players = [];
 	      var player1 = new _Player2.default(0, this.app.screen.height / 3, 5 / 8 * Math.PI, option);
+	
 	      this.app.stage.addChild(player1);
 	
 	      this.app.ticker.add(function (d) {
 	        return player1.update(0.015);
 	      });
 	      var player2 = new _Player2.default(this.app.screen.width, this.app.screen.height / 3, 11 / 8 * Math.PI);
+	
 	      this.app.stage.addChild(player2);
 	      this.app.ticker.add(function (d) {
 	        return player2.update(0.015);
@@ -41680,8 +41707,9 @@
 	  }, {
 	    key: 'playWithPlayersSet',
 	    value: function playWithPlayersSet() {
-	      var _this6 = this;
+	      var _this4 = this;
 	
+	      this.hideGameOptions();
 	      var obs1 = this.players[0].chooseOption();
 	      var obs2 = this.players[1].chooseOption();
 	
@@ -41691,12 +41719,17 @@
 	        var text = void 0;
 	        if (opt1.wins(opt2)) {
 	          text = 'Player 1 is the winner!';
+	          _this4.player1Wins++;
 	        } else if (opt1.looses(opt2)) {
 	          text = 'Player 2 is the winner!';
+	          _this4.player2Wins++;
 	        } else {
 	          text = 'We have a draw here!';
 	        }
-	        _this6.statusText.text = text;
+	        _this4.player1WinsText.text = "Wins: " + _this4.player1Wins.toString();
+	        _this4.player2WinsText.text = "Wins: " + _this4.player2Wins.toString();
+	        _this4.statusText.text = text;
+	        _this4.showGameOptions();
 	      });
 	    }
 	  }]);
