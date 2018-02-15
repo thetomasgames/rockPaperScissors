@@ -2,6 +2,10 @@
 
 Rock Paper Scissors game made with Pixi.js using ES6/2015.
 
+To run this game you only need the files index.html and build/game.js
+
+To make changes and build these files follow the next steps
+
 ## Usage
 
 First of all, this project needs [Webpack](https://webpack.github.io/) in the global scope:
