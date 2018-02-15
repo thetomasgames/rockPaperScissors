@@ -8,7 +8,7 @@ export default class PlayOptions {
     this.id = id
     this.winsIds = winsIds
     this.loosesIds = loosesIds
-    this.texture = PIXI.Texture.fromImage('./assets/' + id + '.png', false)
+    this.texture = PIXI.Texture.fromImage('./assets/' + id + '.png', true)
   }
 
   wins (other) {

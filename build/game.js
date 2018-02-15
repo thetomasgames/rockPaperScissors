@@ -41772,7 +41772,7 @@
 	  function Player(x, y, rotation, choice) {
 	    _classCallCheck(this, Player);
 	
-	    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, _PlayOptions2.default.ROCK.texture, false));
+	    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, _PlayOptions2.default.ROCK.texture));
 	
 	    _this.position.set(x, y);
 	    _this.anchor.set(0.5, 0.95);
@@ -41883,7 +41883,7 @@
 	    this.id = id;
 	    this.winsIds = winsIds;
 	    this.loosesIds = loosesIds;
-	    this.texture = PIXI.Texture.fromImage('./assets/' + id + '.png', false);
+	    this.texture = PIXI.Texture.fromImage('./assets/' + id + '.png', true);
 	  }
 	
 	  _createClass(PlayOptions, [{

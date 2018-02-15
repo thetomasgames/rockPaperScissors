@@ -4,7 +4,7 @@ import { Observable } from 'rxjs'
 // random, predictive(estimates normal distribution), memory(), behaviour
 export default class Player extends PIXI.Sprite {
   constructor(x, y, rotation, choice) {
-    super(PlayOptions.ROCK.texture, false)
+    super(PlayOptions.ROCK.texture)
     this.position.set(x, y)
     this.anchor.set(0.5, 0.95)
     this.rotation = rotation
