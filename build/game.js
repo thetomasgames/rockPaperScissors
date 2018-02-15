@@ -41535,13 +41535,14 @@
 	  value: true
 	});
 	exports.default = {
-	  width: 800,
-	  height: 300,
-	  webgl: false,
+	  width: 800 || window.innerWidth,
+	  height: 300 || window.innerHeight,
+	  webgl: true,
+	  timeChoosing: 1000,
 	  rendererOptions: {
-	    //pixi rendererOptions
 	    backgroundColor: 0x1099bb
-	  }
+	  },
+	  noWebGL: true
 	};
 
 /***/ }),
@@ -41566,12 +41567,16 @@
 	
 	var _PlayOptions2 = _interopRequireDefault(_PlayOptions);
 	
+	var _config = __webpack_require__(192);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Game = function () {
-	  function Game(config) {
+	  function Game() {
 	    var _this = this;
 	
 	    _classCallCheck(this, Game);
@@ -41579,7 +41584,7 @@
 	    this.players = [];
 	    this.gameoptions = [];
 	
-	    this.app = new PIXI.Application(800, 300, { backgroundColor: 0x1099bb });
+	    this.app = new PIXI.Application(_config2.default.width, _config2.default.height, _config2.default.rendererOptions, _config2.default.noWebGL);
 	    document.body.appendChild(this.app.view);
 	    this.statusText = new PIXI.Text('Rock Papper Scissors! (click here to random)');
 	    this.statusText.interactive = true;
@@ -41644,11 +41649,13 @@
 	    key: 'showGameOptions',
 	    value: function showGameOptions() {
 	      this.targetGameOptionsY = this.app.screen.height;
+	      this.enableButtons(true);
 	    }
 	  }, {
 	    key: 'hideGameOptions',
 	    value: function hideGameOptions() {
 	      this.targetGameOptionsY = this.app.screen.height * 2;
+	      this.enableButtons(false);
 	    }
 	  }, {
 	    key: 'createPlayers',
@@ -41674,14 +41681,14 @@
 	        this.app.stage.addChild(this.player2WinsText);
 	      }
 	      this.players = [];
-	      var player1 = new _Player2.default(0, this.app.screen.height / 3, 5 / 8 * Math.PI, option);
+	      var player1 = new _Player2.default(0, this.app.screen.height / 3, 5 / 8 * Math.PI, _config2.default.timeChoosing, option);
 	
 	      this.app.stage.addChild(player1);
 	
 	      this.app.ticker.add(function (d) {
 	        return player1.update(0.015);
 	      });
-	      var player2 = new _Player2.default(this.app.screen.width, this.app.screen.height / 3, 11 / 8 * Math.PI);
+	      var player2 = new _Player2.default(this.app.screen.width, this.app.screen.height / 3, 11 / 8 * Math.PI, _config2.default.timeChoosing);
 	
 	      this.app.stage.addChild(player2);
 	      this.app.ticker.add(function (d) {
@@ -41720,9 +41727,11 @@
 	        if (opt1.wins(opt2)) {
 	          text = 'Player 1 is the winner!';
 	          _this4.player1Wins++;
+	          _this4.scaleWinnersLosers(_this4.players[0], _this4.players[1]);
 	        } else if (opt1.looses(opt2)) {
 	          text = 'Player 2 is the winner!';
 	          _this4.player2Wins++;
+	          _this4.scaleWinnersLosers(_this4.players[1], _this4.players[0]);
 	        } else {
 	          text = 'We have a draw here!';
 	        }
@@ -41731,6 +41740,23 @@
 	        _this4.statusText.text = text;
 	        _this4.showGameOptions();
 	      });
+	    }
+	  }, {
+	    key: 'enableButtons',
+	    value: function enableButtons(enable) {
+	      var objects = this.players.slice();
+	      objects.push(this.statusText);
+	      objects.forEach(function (obj) {
+	        obj.interactive = enable;
+	        obj.buttonMode = enable;
+	      });
+	    }
+	  }, {
+	    key: 'scaleWinnersLosers',
+	    value: function scaleWinnersLosers(winner, loser) {
+	      var factor = 0.2;
+	      winner.scale.x = winner.scale.y = 1 + factor;
+	      loser.scale.x = loser.scale.y = 1 - factor;
 	    }
 	  }]);
 	
@@ -41769,7 +41795,7 @@
 	var Player = function (_PIXI$Sprite) {
 	  _inherits(Player, _PIXI$Sprite);
 	
-	  function Player(x, y, rotation, choice) {
+	  function Player(x, y, rotation, timeChoosing, choice) {
 	    _classCallCheck(this, Player);
 	
 	    var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, _PlayOptions2.default.ROCK.texture));
@@ -41778,8 +41804,8 @@
 	    _this.anchor.set(0.5, 0.95);
 	    _this.rotation = rotation;
 	    _this.tint = Math.random() * 0xffffff << 0; // create specific color for players implementations
+	    _this.timeChoosing = timeChoosing;
 	    _this.choice = choice;
-	    // create player's name text
 	    _this.shakingHand = false;
 	    _this.shakingUp = false;
 	    _this.shakingProgress = 0;
@@ -41820,7 +41846,7 @@
 	      } else {
 	        opt = _PlayOptions2.default.values[Math.round(Math.random() * (_PlayOptions2.default.values.length - 1))];
 	      }
-	      var obs = _rxjs.Observable.of(this.choice || opt).delay(1000);
+	      var obs = _rxjs.Observable.of(this.choice || opt).delay(this.timeChoosing);
 	      obs.share().subscribe(function (res) {
 	        _this2.render(opt);
 	        _this2.shakingHand = false;

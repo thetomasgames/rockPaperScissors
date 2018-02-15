@@ -1,13 +1,14 @@
 import Player from './Player.js';
 import { Observable } from 'rxjs';
 import PlayOptions from './PlayOptions';
+import config from './config';
 
 export default class Game {
   statusText;
   players = [];
   gameoptions = [];
-  constructor(config) {
-    this.app = new PIXI.Application(800, 300, { backgroundColor: 0x1099bb });
+  constructor() {
+    this.app = new PIXI.Application(config.width, config.height,config.rendererOptions,config.noWebGL);
     document.body.appendChild(this.app.view);
     this.statusText = new PIXI.Text('Rock Papper Scissors! (click here to random)');
     this.statusText.interactive = true;
@@ -56,10 +57,12 @@ export default class Game {
 
   showGameOptions() {
     this.targetGameOptionsY = this.app.screen.height;
+    this.enableButtons(true);
   }
 
   hideGameOptions() {
     this.targetGameOptionsY = this.app.screen.height * 2;
+    this.enableButtons(false);
   }
 
   createPlayers(option) {
@@ -80,12 +83,12 @@ export default class Game {
       this.app.stage.addChild(this.player2WinsText);
     }
     this.players = [];
-    let player1 = new Player(0, this.app.screen.height / 3, 5 / 8 * Math.PI, option);
+    let player1 = new Player(0, this.app.screen.height / 3, 5 / 8 * Math.PI, config.timeChoosing,option);
 
     this.app.stage.addChild(player1);
 
     this.app.ticker.add(d => player1.update(0.015));
-    let player2 = new Player(this.app.screen.width, this.app.screen.height / 3, 11 / 8 * Math.PI);
+    let player2 = new Player(this.app.screen.width, this.app.screen.height / 3, 11 / 8 * Math.PI,config.timeChoosing);
 
     this.app.stage.addChild(player2);
     this.app.ticker.add(d => player2.update(0.015));
@@ -118,9 +121,11 @@ export default class Game {
       if (opt1.wins(opt2)) {
         text = 'Player 1 is the winner!';
         this.player1Wins++;
+        this.scaleWinnersLosers(this.players[0],this.players[1])
       } else if (opt1.looses(opt2)) {
         text = 'Player 2 is the winner!';
         this.player2Wins++;
+        this.scaleWinnersLosers(this.players[1],this.players[0])
       } else {
         text = 'We have a draw here!';
       }
@@ -129,6 +134,21 @@ export default class Game {
       this.statusText.text = text;
       this.showGameOptions();
     });
+  }
+
+  enableButtons(enable){
+    let objects = this.players.slice();
+    objects.push(this.statusText);
+    objects.forEach(obj=>{
+      obj.interactive=enable;
+      obj.buttonMode=enable;
+    });
+  }
+
+  scaleWinnersLosers(winner,loser){
+    let factor = 0.2;
+    winner.scale.x=winner.scale.y=1+factor;
+    loser.scale.x=loser.scale.y=1-factor;
   }
 
 }

@@ -1,9 +1,10 @@
 export default {
-  width: 800,
-  height: 300,
-  webgl: false,
+  width: 800 || window.innerWidth,
+  height: 300 || window.innerHeight,
+  webgl: true,
+  timeChoosing: 1000,
   rendererOptions: {
-    //pixi rendererOptions
     backgroundColor: 0x1099bb
-  }
-};
+  },
+  noWebGL: true
+}
